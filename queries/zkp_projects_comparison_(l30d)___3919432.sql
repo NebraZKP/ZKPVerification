@@ -16,6 +16,9 @@ with base as (
     select 'infra' as type, 'Ethereum' as chain, 'Aztec' as protocol, * from dune.nebra.result_aztec_verification_base -- https://dune.com/queries/3916310
     UNION ALL
     select 'infra' as type, 'Ethereum' as chain, 'Polygon zkEVM' as protocol, * from dune.nebra.result_polygon_zk_evm_verification_base -- https://dune.com/queries/3916389
+    UNION ALL
+    select 'infra' as type, 'Ethereum' as chain, 'Starknet' as protocol, * from dune.nebra.result_starknet_verification_base -- https://dune.com/queries/3948217
+    
     
     -- app
     UNION ALL
@@ -26,7 +29,6 @@ with base as (
     select 'app' as type, 'Ethereum' as chain, 'Nocturne' as protocol, * from dune.nebra.result_nocturne_verification_base -- https://dune.com/queries/3916443
     UNION ALL
     select 'app' as type, 'Ethereum' as chain, 'Railgun' as protocol, * from dune.nebra.result_railgun_verification_base -- https://dune.com/queries/3902794
-    
     
     -- exclude because it's on OP/L2
     -- select 'infra' as type, 'Ethereum' as chain, 'Worldcoin' as protocol, * from dune.nebra.result_worldcoin_op_verification_base -- https://dune.com/queries/3902422

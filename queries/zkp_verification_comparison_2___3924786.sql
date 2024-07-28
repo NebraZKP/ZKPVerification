@@ -16,6 +16,9 @@ with base as (
     select 'infra' as type, 'Ethereum' as chain, 'Aztec' as protocol, * from dune.nebra.result_aztec_verification_base -- https://dune.com/queries/3916310
     UNION ALL
     select 'infra' as type, 'Ethereum' as chain, 'Polygon zkEVM' as protocol, * from dune.nebra.result_polygon_zk_evm_verification_base -- https://dune.com/queries/3916389
+    UNION ALL
+    select 'infra' as type, 'Ethereum' as chain, 'Starknet' as protocol, * from dune.nebra.result_starknet_verification_base -- https://dune.com/queries/3948217
+    
     
     -- app
     UNION ALL
