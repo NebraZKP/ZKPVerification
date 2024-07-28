@@ -32,6 +32,12 @@ WHERE tx.to = 0xd19d4B5d358258f05D7B411E21A1460D11B0876F -- Linea L1 Message Ser
             OR bytearray_substring(tx.data, 1, 4) = 0x4165d6dd -- finalizeBlocks -- https://etherscan.io/tx/0x750cf2a6239e1fee1f04b6d66fa93822ce2b4ae4d81e84035f1dc313391e512a/advanced#internal
             OR bytearray_substring(tx.data, 1, 4) = 0xabffac32 -- finalizeBlocksWithProof -- https://etherscan.io/tx/0x11a41718c21e2aa3c7052b99938b26ac366a30ba00aad0a7b5dff63bfe0309b1/advanced#internal
             )
-    and tr.to in (0xc01E6807DB9Fb9cC75E9Fe622ba8e7f3eB9f2B32, 0x6312e56c17e1011dd0821558034a77bb60d06e1b, 0x8AB455030E1Ea718e445f423Bb8D993dcAd24Cc4) -- PlonkVerifierFull
+    and tr.to in ( -- PlonkVerifierFull
+        select ct.address as plonk_verifier
+        from ethereum.transactions tx
+        left join ethereum.creation_traces ct on ct.block_number = tx.block_number and ct.tx_hash = tx.hash
+        where tx."from" = 0x6dD3120E329dC5FaA3d2Cf65705Ef4f6486F65F7
+            and bytearray_substring(tx.data, 1, 4) = 0x60806040
+        ) 
     -- and tx.block_number = 19853383 and tx.hash = 0xdfd79401c75f370e4a742223c1f553d934ec6903106cde1f1b6814dc5825bb15 -- https://etherscan.io/tx/0xdfd79401c75f370e4a742223c1f553d934ec6903106cde1f1b6814dc5825bb15/advanced#internal
 group by 1
