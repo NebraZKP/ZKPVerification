@@ -1,11 +1,11 @@
-name: Push to Dune on Commit
+name: Pull Loopring active addresses and upload it to Dune
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'queries/**'
+  schedule:
+    - cron: "30 5 * * *"
 
 jobs:
   build:
@@ -13,20 +13,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Log directory structure
         run: |
           pwd
           ls -R
-    
+
       - name: pip requirements
         run: pip install -r requirements.txt
 
-      - name: Update all queries from Dune, by overwriting queries with repo query text
+      - name: Pull Loopring active addresses and upload it to Dune
         env:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
-        run: python -u scripts/push_to_dune.py
+        run: python -u scripts/pull_loopring_aa.py
