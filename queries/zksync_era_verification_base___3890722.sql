@@ -27,7 +27,6 @@ select tr.block_date
     , sum(cast(tr.gas_used as double) / 1e9 * median_gas_price) as verifying_cost_ETH -- gas in gwei, so divide by 1e9
     , sum(cast(tr.gas_used as double) / 1e9 * median_gas_price * avg_eth_price) as verifying_cost_usd 
 from zksync_v2_ethereum.ValidatorTimelock_call_proveBlocks pb 
-
 left join ethereum.traces tr on tr.block_number = pb.call_block_number and tr.tx_hash = pb.call_tx_hash
 left join eth_usd_price ep on tr.block_date = ep.day
 left join eth_gas_price gp on tr.block_date = gp.day
@@ -44,7 +43,6 @@ select tr.block_date
     , sum(cast(tr.gas_used as double) / 1e9 * median_gas_price) as verifying_cost_ETH -- gas in gwei, so divide by 1e9
     , sum(cast(tr.gas_used as double) / 1e9 * median_gas_price * avg_eth_price) as verifying_cost_usd 
 from zksync_v2_ethereum.ValidatorTimelock_call_proveBatches pb 
-
 left join ethereum.traces tr on tr.block_number = pb.call_block_number and tr.tx_hash = pb.call_tx_hash
 left join eth_usd_price ep on tr.block_date = ep.day
 left join eth_gas_price gp on tr.block_date = gp.day
@@ -61,7 +59,6 @@ select tr.block_date
     , sum(cast(tr.gas_used as double) / 1e9 * median_gas_price) as verifying_cost_ETH -- gas in gwei, so divide by 1e9
     , sum(cast(tr.gas_used as double) / 1e9 * median_gas_price * avg_eth_price) as verifying_cost_usd 
 from zksync_v2_ethereum.ValidatorTimelock3_call_proveBatches pb 
-
 left join ethereum.traces tr on tr.block_number = pb.call_block_number and tr.tx_hash = pb.call_tx_hash
 left join eth_usd_price ep on tr.block_date = ep.day
 left join eth_gas_price gp on tr.block_date = gp.day
@@ -91,4 +88,4 @@ where t.success
     and tr.call_type = 'staticcall'
     and tr.to = 0x70f3fbf8a427155185ec90bed8a3434203de9604 -- temporarily doing this until we have correct internal transactions for precompiles
     -- and tr.block_number = 20034517 and tr.tx_hash = 0x5ed81fc4cfd813102a502a6fb5e66864bb341a1ce2c0d1cc65d34b53b38e53d3
-group by 1 
+group by 1  1 

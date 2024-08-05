@@ -28,7 +28,8 @@ from ethereum.transactions tx
 left join ethereum.traces tr on tr.block_number = tx.block_number and tr.tx_hash = tx.hash
 left join eth_usd_price ep on tr.block_date = ep.day
 left join eth_gas_price gp on tr.block_date = gp.day
-WHERE tx.to = 0x5132A183E9F3CB7C848b0AAC5Ae0c4f0491B7aB2
+WHERE tx.block_date >= date('2023-03-01') -- when zkEVM started using Ethereum
+    and tx.to = 0x5132A183E9F3CB7C848b0AAC5Ae0c4f0491B7aB2
     and (
         bytearray_substring(tx.data, 1, 4) = 0x1489ed10 -- verifyBatchesTrustedAggregator -- https://etherscan.io/tx/0xf151bd2f9cfa516038d313267086bf5fd5cb2f35049aa1cba17ea9661a8f832f
         or bytearray_substring(tx.data, 1, 4) = 0x2b0006fa -- verifyBatchesTrustedAggregator -- https://etherscan.io/tx/0x057b8d070516fde8195480fca1ebdb28d557dfad2d39b8ce78d64d86106a97b4
