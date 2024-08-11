@@ -28,6 +28,8 @@ with base as (
     select 'app' as type, 'Ethereum' as chain, 'Nocturne' as protocol, * from dune.nebra.result_nocturne_verification_base -- https://dune.com/queries/3916443
     UNION ALL
     select 'app' as type, 'Ethereum' as chain, 'Railgun' as protocol, * from dune.nebra.result_railgun_verification_base -- https://dune.com/queries/3902794
+    UNION ALL
+    select 'app' as type, 'Ethereum' as chain, 'StarEX projects (excl. Starknet L2)' as protocol, * from dune.nebra.result_stark_ex_projects_excl_starknet_l_2_verification_base -- https://dune.com/queries/3973955
     
     -- exclude because it's on OP/L2
     -- select 'infra' as type, 'Ethereum' as chain, 'Worldcoin' as protocol, * from dune.nebra.result_worldcoin_op_verification_base -- https://dune.com/queries/3902422
@@ -40,5 +42,6 @@ select date_trunc('month', block_date) as time
     , sum(verifying_cost_eth) as cost_eth
     , sum(verifying_cost_usd) as cost_usd
 from base
+where block_date >= now() - interval '4' year
 -- where block_date < date_trunc('week', NOW()) -- excluding current week 
 group by 1,2

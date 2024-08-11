@@ -1,4 +1,3 @@
--- WARNING: this query may be part of multiple repos
 -- part of a query repo
 -- query name: ZKP all time all project
 -- query link: https://dune.com/queries/3919405
@@ -41,4 +40,5 @@ select sum(verifying_cost_usd) as total_zkp_cost_usd
     , array_agg(distinct protocol) as coverage_projects
     , count(distinct protocol) as coverage_num
 from base
+where block_date >= now() - interval '7' dayrom base
 where block_date >= now() - interval '7' day

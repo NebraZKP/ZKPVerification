@@ -4,9 +4,11 @@
 
 
 with eth_gas_price as (
-    SELECT DATE_TRUNC('day', block_time) AS day
-       , APPROX_PERCENTILE(gas_price/ 1e9, 0.5) AS median_gas_price
-    from ethereum.transactions
+    SELECT DATE_TRUNC('day', tx.block_time) AS day
+       , APPROX_PERCENTILE(tx.gas_price / 1e18, 0.5) AS median_legacy_gas_price
+       , APPROX_PERCENTILE( (b.base_fee_per_gas + tx.priority_fee_per_gas) / 1e18, 0.5) AS median_dynamic_gas_price
+    from ethereum.transactions tx
+    INNER JOIN ethereum.blocks b ON tx.block_number = b.number
     group by 1
 )
 
@@ -20,9 +22,14 @@ with eth_gas_price as (
 
 select tr.block_date 
     , count(distinct tx_hash) as verifying_calls
-    , sum(cast(tr.gas_used as double) / 1e9 * median_gas_price) as verifying_cost_ETH -- gas in gwei, so divide by 1e9
-    , sum(cast(tr.gas_used as double) / 1e9 * median_gas_price * avg_eth_price) as verifying_cost_usd 
+    , sum(case when tx.type = 'DynamicFee' then cast(tr.gas_used as double) * median_dynamic_gas_price -- dynamic 
+        else cast(tr.gas_used as double) * median_legacy_gas_price -- legacy
+    end) as verifying_cost_ETH
+    , sum(case when tx.type = 'DynamicFee' then cast(tr.gas_used as double) * median_dynamic_gas_price * avg_eth_price -- dynamic 
+        else cast(tr.gas_used as double) * median_legacy_gas_price * avg_eth_price -- legacy
+    end) as verifying_cost_usd
 from ethereum.traces tr
+left join ethereum.transactions tx on tr.block_number = tx.block_number and tr.tx_hash = tx.hash
 left join eth_usd_price ep on tr.block_date = ep.day
 left join eth_gas_price gp on tr.block_date = gp.day
 where tr.to = 0xce172ce1f20ec0b3728c9965470eaf994a03557a -- Tornado Cash verifier address: https://etherscan.io/address/0xce172ce1f20ec0b3728c9965470eaf994a03557a/advanced#code
@@ -48,6 +55,6 @@ where tr.to = 0xce172ce1f20ec0b3728c9965470eaf994a03557a -- Tornado Cash verifie
         , 0xbB93e510BbCD0B7beb5A853875f9eC60275CF498 -- 10 WBTC	
     )
     
--- and block_number = 20252222 and tx_hash = 0xe404161d733877a4fdbf9c315c13e9297604c1829d8db98392cb2120e54566d6
-
+    -- and block_number = 20252222 and tx_hash = 0xe404161d733877a4fdbf9c315c13e9297604c1829d8db98392cb2120e54566d6
+    -- and tr.block_date >= now() - interval '14' day
 group by 1

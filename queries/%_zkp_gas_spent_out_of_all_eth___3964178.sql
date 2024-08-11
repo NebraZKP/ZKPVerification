@@ -1,4 +1,3 @@
--- WARNING: this query may be part of multiple repos
 -- part of a query repo
 -- query name: ZKP Projects Comparison (L30D)
 -- query link: https://dune.com/queries/3919432
@@ -91,4 +90,5 @@ with base as (
 
 select verifying_cost_eth / overall_gas_eth * 100 as percent_zk_gas_eth -- to make pct for counter
     -- , verifying_cost_usd / overall_gas_usd as percent_zk_gas_usd
+from zkp_agg, eth_overalls_usd as percent_zk_gas_usd
 from zkp_agg, eth_overall

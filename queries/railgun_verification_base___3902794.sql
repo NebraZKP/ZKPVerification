@@ -4,9 +4,11 @@
 
 
 with eth_gas_price as (
-    SELECT DATE_TRUNC('day', block_time) AS day
-       , APPROX_PERCENTILE(gas_price/ 1e9, 0.5) AS median_gas_price
-    from ethereum.transactions
+    SELECT DATE_TRUNC('day', tx.block_time) AS day
+       , APPROX_PERCENTILE(tx.gas_price / 1e18, 0.5) AS median_legacy_gas_price
+       , APPROX_PERCENTILE( (b.base_fee_per_gas + tx.priority_fee_per_gas) / 1e18, 0.5) AS median_dynamic_gas_price
+    from ethereum.transactions tx
+    INNER JOIN ethereum.blocks b ON tx.block_number = b.number
     group by 1
 )
 
@@ -30,16 +32,21 @@ select
     -- tr.* 
     tr.block_date 
     , count(distinct r.call_tx_hash) as verifying_calls
-    , sum(cast(163722.5 as double) / 1e9 * median_gas_price) as verifying_cost_ETH -- gas in gwei, so divide by 1e9
-    , sum(cast(163722.5 as double) / 1e9 * median_gas_price * avg_eth_price) as verifying_cost_usd 
+    , sum(case when tx.type = 'DynamicFee' then cast(263273 as double) * median_dynamic_gas_price -- dynamic 
+        else cast(tr.gas_used as double) * median_legacy_gas_price -- legacy
+    end) as verifying_cost_ETH
+    , sum(case when tx.type = 'DynamicFee' then cast(263273 as double) * median_dynamic_gas_price * avg_eth_price -- dynamic 
+        else cast(tr.gas_used as double) * median_legacy_gas_price * avg_eth_price -- legacy
+    end) as verifying_cost_usd
 from railgun_ethereum.RailgunLogic_call_transact r -- RailgunSmartWallet contract https://etherscan.io/address/0xc0bef2d373a1efade8b952f33c1370e486f209cc
 left join ethereum.traces tr on tr.block_number = r.call_block_number and tr.tx_hash = r.call_tx_hash
+inner join ethereum.transactions tx on tx.block_number = tr.block_number and tx.hash = tr.tx_hash
 left join eth_usd_price ep on tr.block_date = ep.day
 left join eth_gas_price gp on tr.block_date = gp.day
 where r.call_success
     -- and tr.call_type = 'staticcall'
     -- and r.call_block_number = 17519522 and r.call_tx_hash = 0xf961c5aee4b000de71c34f075ad1f5b1b3069144283d971e3a924b5083cbd76b
-
+    -- and tr.block_date >= now() - interval '14' day
 group by 1
 
 
