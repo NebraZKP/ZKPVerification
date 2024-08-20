@@ -28,6 +28,9 @@ with base as (
     select 'app' as type, 'Ethereum' as chain, 'Nocturne' as protocol, * from dune.nebra.result_nocturne_verification_base -- https://dune.com/queries/3916443
     UNION ALL
     select 'app' as type, 'Ethereum' as chain, 'Railgun' as protocol, * from dune.nebra.result_railgun_verification_base -- https://dune.com/queries/3902794
+    UNION ALL
+    select 'app' as type, 'Ethereum' as chain, 'StarkEx projects (excl. Starknet & dYdX)' as protocol, * from dune.nebra.result_stark_ex_projects_excl_starknet_l_2_verification_base -- https://dune.com/queries/3973955
+    
     
     -- exclude because it's on OP/L2
     -- select 'infra' as type, 'Ethereum' as chain, 'Worldcoin' as protocol, * from dune.nebra.result_worldcoin_op_verification_base -- https://dune.com/queries/3902422
@@ -40,5 +43,4 @@ select sum(verifying_cost_usd) as total_zkp_cost_usd
     , array_agg(distinct protocol) as coverage_projects
     , count(distinct protocol) as coverage_num
 from base
-where block_date >= now() - interval '30' dayom base
 where block_date >= now() - interval '30' day
