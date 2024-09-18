@@ -27,8 +27,8 @@ where 1=1
         0x4B8Aa8A96078689384DAb49691E9bA51F9d2F9E1 -- L1_PLONK_VERIFIER_V0_ADDR
         , 0x2293cd12e8564e8219d314b075867c2f66ac6941 -- L1_PLONK_VERIFIER_V1_ADDR
         , 0x03a72B00D036C479105fF98A1953b15d9c510110 -- L1_PLONK_VERIFIER_V2_ADDR
-        , 0x2d6e16d8e8a0C3Bc7750E774B108Ec39Ab0C18fB -- L1_PLONK_VERIFIER_V3_ADDR
-        , 0xCAECeE2E815e7f758c2477f900AFA14bDDce54B3 -- L1_PLONK_VERIFIER_V4_ADDR
+        , 0x8759E83b6570A0bA46c3CE7eB359F354F816c9a9 -- L1_PLONK_VERIFIER_V3_ADDR
+        , 0x8c1b52757b5c571ADcB5572E992679d4D48e30f7 -- L1_PLONK_VERIFIER_V4_ADDR
     )
     and tr.call_type = 'staticcall' -- assuming that verifier contract should be called as readonly staticcalls (next best to identifying all verifier contracts which is pretty impossible manually)
     
