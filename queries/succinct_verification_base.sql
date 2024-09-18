@@ -18,18 +18,20 @@ with eth_gas_price as (
     group by 1
 )
 
-select
-  block_date,
-  count(distinct tx_hash) as verifying_calls,
-  sum(cast(gas_used as double) / 1e9 * median_gas_price) as verifying_cost_ETH,
-  sum(
-    cast(gas_used as double) / 1e9 * median_gas_price * avg_eth_price
-  ) as verifying_cost_usd
-from
-  ethereum.traces
-  left join eth_usd_price ep on block_date = ep.day
-  left join eth_gas_price gp on block_date = gp.day
+select tr.block_date 
+    , count(distinct tx_hash) as verifying_calls
+    , sum(case when tx.type = 'DynamicFee' then cast(tr.gas_used as double) * median_dynamic_gas_price -- dynamic 
+        else cast(tr.gas_used as double) * median_legacy_gas_price -- legacy
+    end) as verifying_cost_ETH
+    , sum(case when tx.type = 'DynamicFee' then cast(tr.gas_used as double) * median_dynamic_gas_price * avg_eth_price -- dynamic 
+        else cast(tr.gas_used as double) * median_legacy_gas_price * avg_eth_price -- legacy
+    end) as verifying_cost_usd
+from ethereum.traces tr
+left join ethereum.transactions tx on tr.block_number = tx.block_number and tr.tx_hash = tx.hash
+left join eth_usd_price ep on tr.block_date = ep.day
+left join eth_gas_price gp on tr.block_date = gp.day
 where
-  to = 0x3B6041173B80E77f038f3F2C0f9744f04837185e -- SP1VerifierGateway
-  and bytearray_substring (input, 1, 4) = 0x41493c60 -- verifyProof
+    tr.to = 0x3B6041173B80E77f038f3F2C0f9744f04837185e -- SP1VerifierGateway
+    and tr.call_type = 'staticcall'
+    and bytearray_substring (input, 1, 4) = 0x41493c60 -- verifyProof
 group by 1
