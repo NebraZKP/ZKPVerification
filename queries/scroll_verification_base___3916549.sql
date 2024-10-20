@@ -1,3 +1,4 @@
+-- FORK
 -- part of a query repo
 -- query name: Scroll verification base
 -- query link: https://dune.com/queries/3916549
@@ -34,7 +35,7 @@ where 1=1
     
     -- and tx.block_date >= now() - interval '7' day
     -- and tx.block_number = 20301391 and tx.hash = 0x59fd8268be53ba38b267696270e3a09d2768036295552f19ca5edc607a3faa41 -- https://etherscan.io/tx/0x59fd8268be53ba38b267696270e3a09d2768036295552f19ca5edc607a3faa41/advanced#internal --> 200,549
-group by 1ch finalizer, per Scroll team this is the correct address
+group by 1izer, per Scroll team this is the correct address
     and tr.call_type = 'staticcall' -- assuming that verifier contract should be called as readonly staticcalls (next best to identifying all verifier contracts which is pretty impossible manually)
     
     -- and tx.block_date >= now() - interval '7' day
