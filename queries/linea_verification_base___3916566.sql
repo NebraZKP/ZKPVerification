@@ -36,7 +36,8 @@ left join eth_usd_price ep on tr.block_date = ep.day
 left join eth_gas_price gp on tr.block_date = gp.day
 WHERE tx.to = 0xd19d4B5d358258f05D7B411E21A1460D11B0876F -- Linea L1 Message Service
         AND (bytearray_substring(tx.data, 1, 4) = 0xd630280f -- finalizeCompressedBlocksWithProof -- https://etherscan.io/tx/0xdfd79401c75f370e4a742223c1f553d934ec6903106cde1f1b6814dc5825bb15/advanced#internal
-            OR bytearray_substring(tx.data, 1, 4) = 0x4165d6dd -- finalizeBlocks -- https://etherscan.io/tx/0x750cf2a6239e1fee1f04b6d66fa93822ce2b4ae4d81e84035f1dc313391e512a/advanced#internal
+            OR bytearray_substring(tx.data, 1, 4) = 0x4165d6dd -- finalizeBlocks (old contract) -- https://etherscan.io/tx/0x750cf2a6239e1fee1f04b6d66fa93822ce2b4ae4d81e84035f1dc313391e512a/advanced#internal
+            OR bytearray_substring(tx.data, 1, 4) = 0x5603c65f -- finalizeBlocks (current contract) -- https://etherscan.io/tx/0x006a303e87fef08c09f35a83c535e916e990e1f115d420a768499dac46a28627/advanced
             OR bytearray_substring(tx.data, 1, 4) = 0xabffac32 -- finalizeBlocksWithProof -- https://etherscan.io/tx/0x11a41718c21e2aa3c7052b99938b26ac366a30ba00aad0a7b5dff63bfe0309b1/advanced#internal
             )
     and tr.to in ( -- Verifier contracts

@@ -23,7 +23,10 @@ left join ethereum.traces tr on tr.block_number = tx.block_number and tr.tx_hash
 left join eth_usd_price ep on tr.block_date = ep.day
 where 1=1
     -- and varbinary_substring(tx.data, 1, 4) = 0x00b0f4d7 -- finalizeBatchWithProof4844, not needed
-    and tx."from" = 0x356483dC32B004f32Ea0Ce58F7F88879886e9074 -- bathch finalizer, per Scroll team this is the correct address
+    and tx."from" in (
+        0x356483dC32B004f32Ea0Ce58F7F88879886e9074, -- old batch finalizer, per Scroll team this is the correct address
+        0x6f9d816c4ec365fe8fc6898c785be0e2d51bec2c -- current batch finalizer https://etherscan.io/accounts/label/scroll
+    )
     and tr.to in ( -- filter for calls to the actual proof verifier 
         0x4B8Aa8A96078689384DAb49691E9bA51F9d2F9E1 -- L1_PLONK_VERIFIER_V0_ADDR
         , 0x2293cd12e8564e8219d314b075867c2f66ac6941 -- L1_PLONK_VERIFIER_V1_ADDR
